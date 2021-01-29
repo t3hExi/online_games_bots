@@ -148,7 +148,7 @@ The config file located in `config/servers.yml`. The structure is simple. First 
 Note: if you want to use more than one account (for example for multiple servers), just use more definitions in servers.yml file
 
 ```yaml
-lak_us:
+lak_germanien_3:
   :bot: lords_and_kinghts_v3
 ```
 
