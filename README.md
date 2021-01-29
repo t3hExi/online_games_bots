@@ -145,13 +145,13 @@ docker run -e LOG_LEVEL=debug -v $(pwd)/config:/app/config -v $(pwd)/tmp:/app/tm
 ## Settings
 
 The config file located in `config/servers.yml`. The structure is simple. First you should specify the custom server name example `lak_us` and bot.
+Note: if you want to use more than one account (for example for multiple servers), just use more definitions in servers.yml file
 
 ```yaml
 lak_us:
   :bot: lords_and_kinghts_v3
 ```
-
-Note: if you want to use more than one account (for example for multiple servers), just use more definitions in servers.yml file
+Now we know what kind of game you want to connect. For Lords and Knights we need to specify the server.
 
 ```yaml
 lak_us:
