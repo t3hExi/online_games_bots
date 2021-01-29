@@ -151,6 +151,7 @@ Note: if you want to use more than one account (for example for multiple servers
 lak_us:
   :bot: lords_and_kinghts_v3
 ```
+
 Now we know what kind of game you want to connect. For Lords and Knights we need to specify the server.
 
 ```yaml
