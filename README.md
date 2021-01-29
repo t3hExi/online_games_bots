@@ -154,18 +154,6 @@ lak_us:
 Now we know what kind of game you want to connect. For Lords and Knights we need to specify the server.
 
 ```yaml
-lak_us:
-  :bot: lords_and_kinghts_v3
-  :server_name: Germanien III (DE) - empfohlen
-  :server_url: http://lordsandknights.com
-```
-
-- `server_name` is the text name that you can copy from the login page after you inpuit the credentials.
-- `server_url` is the login url
-
-Now we know what kind of game you want to connect. For Lords and Knights we need to specify the server.
-
-```yaml
 lak_germanien_3:
   :bot: lords_and_kinghts_v3
   :server_name: Germanien III (DE)
@@ -176,6 +164,9 @@ lak_germanien_4:
   :server_name: Germanien IV (DE) 
   :server_url: http://lordsandknights.com
 ```
+
+- `server_name` is the text name that you can copy from the login page after you inpuit the credentials.
+- `server_url` is the login url
 
 # Config path
 
