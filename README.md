@@ -35,6 +35,10 @@ Continuously send troops to missions. **WARNING**: Disable it manually, if you h
 
 Get automaticaly rewards if it them available in the Task list.
 
+### Free Gifts
+
+Collect automaticaly free gifts if it them available
+
 ### Exchange Silver
 
 Use Mass functions to exchange silver from each castle and fortress.
