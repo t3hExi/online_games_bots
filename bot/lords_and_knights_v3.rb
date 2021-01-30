@@ -438,11 +438,11 @@ module Bot
       end
 
       selectors.each do |selector|
-        locator = first(selector)
+        locator = all(selector)[0]
         if locator
           locator.click
           timeout
-          return true
+          return popup_close
         end
       end
 
