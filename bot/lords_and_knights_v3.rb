@@ -523,7 +523,7 @@ module Bot
 
         building_level = 0
         if building_description.include?("Upgrade level ")
-          building_level = building_description[14..].to_i
+          building_level = building_description[14..16].to_i
         elsif building_description.include?("Level ")
           building_level = building_description[6..8].to_i
           building_level + 1;
