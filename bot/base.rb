@@ -44,15 +44,19 @@ module Bot
     end
 
     def run_commands
-      @actions.each do |action|
-        if action.is_a?(Hash)
-          action.each do |action_name, action_options|
-            next if action_options.key?(:enable) && action_options[:enable] != true
-            self.send(action_name, action_options)
+      begin
+        @actions.each do |action|
+          if action.is_a?(Hash)
+            action.each do |action_name, action_options|
+              next if action_options.key?(:enable) && action_options[:enable] != true
+              self.send(action_name, action_options)
+            end
+          else
+            self.send action
           end
-        else
-          self.send action
         end
+      rescue => e
+        debug_message(e)
       end
     end
 
@@ -61,26 +65,31 @@ module Bot
     end
 
     def run
-      login
+      begin
+        login
 
-      loop do
-        choose_first_castle
-        run_commands
-
-        while choose_next_castle
+        loop do
+          choose_first_castle
           run_commands
+
+          while choose_next_castle
+            run_commands
+            timeout
+          end
+
+          break if @enable_loop == false
           timeout
         end
 
-        break if @enable_loop == false
-        timeout
+        logger.info "> Logout"
+        logger.info " "
+      rescue => e
+        debug_message(e)
       end
+    end
 
-      logger.info "> Logout"
-      logger.info " "
-    rescue => e
-    # rescue Capybara::ElementNotFound => e
-      logger.info "FAILED: #{self.class.inspect}"
+    def debug_message(e) 
+      logger.debug "FAILED: #{self.class.inspect}"
       screenshot_and_save_page rescue nil
       logger.debug '--- Exception'
       logger.debug e.class
@@ -89,7 +98,6 @@ module Bot
       logger.debug '---- Console'
       logger.debug(page.driver.console_messages) rescue nil
       logger.debug "---- Body"
-      # logger.debug page.body
       logger.debug '-----'
     end
 

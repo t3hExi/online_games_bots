@@ -148,8 +148,7 @@ docker run -e LOG_LEVEL=debug -v $(pwd)/config:/app/config -v $(pwd)/tmp:/app/tm
 
 ## Settings
 
-The config file located in `config/servers.yml`. The structure is simple. First you should specify the custom server name example `lak_us` and bot.
-Note: if you want to use more than one account (for example for multiple servers), just use more definitions in servers.yml file
+The config file located in `config/servers.yml`. The structure is simple. First you should specify the custom server name example `lak_germanien_3` and bot.
 
 ```yaml
 lak_germanien_3:
@@ -163,15 +162,25 @@ lak_germanien_3:
   :bot: lords_and_kinghts_v3
   :server_name: Germanien III (DE)
   :server_url: http://lordsandknights.com
+  
+```
+
+- `server_name` is the text name that you can copy from the login page after you inpuit the credentials.
+- `server_url` is the login url
+
+If you want to use more than one account (for example for multiple servers like `lak_germanien_3` and `lak_germanien_4`), just use more definitions in servers.yml file
+
+```yaml
+lak_germanien_3:
+  :bot: lords_and_kinghts_v3
+  :server_name: Germanien III (DE)
+  :server_url: http://lordsandknights.com
 
 lak_germanien_4:
   :bot: lords_and_kinghts_v3
   :server_name: Germanien IV (DE) 
   :server_url: http://lordsandknights.com
 ```
-
-- `server_name` is the text name that you can copy from the login page after you inpuit the credentials.
-- `server_url` is the login url
 
 # Config path
 

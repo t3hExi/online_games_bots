@@ -144,6 +144,8 @@ module Bot
         buttons = all('button:not(.disabled)')
         buttons.each do |button|
           next if button.has_selector?('div.icon-research-speedup') || button.has_selector?('div.icon-research-finish')
+          wait_while('.loading-spinner.loading-spinner--pending', 10)
+          wait_while("#over-layer--game-pending", 10)
           button.click
           timeout
         end
@@ -157,33 +159,40 @@ module Bot
     def build_first(options={})
       logger.info " > Building"
       choose_building_list
-      build_next
+
+      while build_next
+        timeout
+      end
+      
       logger.debug "   * Finished Building"
     end
 
     def build_next
       logger.debug '   * build_next'
+      progress_count = 0
+
       within '#menu-section-general-container > .menu-section > .menu--content-section' do
-        current_buildings = all('.widget--upgrades-in-progress--list > .menu-list-element.with-icon-right')
-        logger.info "   * #{current_buildings.size} buildings in progress"
-        if current_buildings.size > 0
-          # Check if there is Free build
-          first_building = current_buildings.first
-          if first_building.find('button .icon')[:class].include?('icon-build-finish-free')
-            first_building_title = first_building.find('.menu-list-element-basic--title').text()
-            logger.info "   * Finish Free speedup #{first_building_title}"
-            first_building.find(:button).click
-          elsif current_buildings.size == 2
-            logger.info '   * Nothing todo. Workers are busy.'
-            return
+        progress_count = all('.widget--upgrades-in-progress--list > .menu-list-element.with-icon-right').size
+
+        if progress_count > 0
+          if finish_free_building
+            progress_count = progress_count - 1
+            timeout(3)
           end
+        end
+
+        if progress_count == 2
+          logger.info '   * Nothing todo. Workers are busy.'
+          return false
+        else 
+          logger.info "   * #{progress_count} buildings in progress"
         end
 
         buildings = get_available_buildings
 
         if buildings.empty?
           logger.info '   * There are no buildings to upgrade'
-          return 
+          return false
         end
 
         # If there are no buildings to build, build all available
@@ -199,19 +208,45 @@ module Bot
           logger.debug "   * Check if #{name} with level #{level} available"
           if buildings.key?(name) && (level.nil? || level > buildings[name][:level])
             logger.info "   * Upgrade #{name} with level #{buildings[name][:level]}"
+            wait_while('.loading-spinner.loading-spinner--pending', 10)
+            wait_while("#over-layer--game-pending", 10)
             buildings[name][:button].click()
-            timeout
-            break
+            progress_count = progress_count + 1
+            return progress_count < 2
           end
         end
       end
+
+      return false
+    end
+
+    def finish_free_building
+      begin
+        within '.widget--upgrades-in-progress--list' do
+          building = first('.menu-list-element.with-icon-right')
+
+          if building != nil
+            # Check if there is Free build
+            if building.has_selector?('.icon-build-finish-free-2')
+              building_title = building.find('.menu-list-element-basic--title').text()
+              logger.info "   * Finish Free speedup #{building_title}"
+              building.first(:button).click
+              return true
+            end
+          end
+        end
+      rescue => e
+        # catch Exception:
+        # stale element reference: element is not attached to the page document
+        logger.debug e.message
+      end
+
+      false
     end
 
     def choose_first_castle
       popup_close
       logger.debug("   * choose_first_castle")
-      # Enabled by default
-      # choose_building_list
       @first_castle = get_selected_castle
       @castle = @first_castle
       logger.info "> Selected castle: #{@castle}"
@@ -272,6 +307,8 @@ module Bot
         buttons.each do |button|
           next unless button.has_selector?('div.icon-mission')
           logger.debug "   * start mission"
+          wait_while('.loading-spinner.loading-spinner--pending', 10)
+          wait_while("#over-layer--game-pending", 10)
           button.click
           timeout
         end
@@ -459,10 +496,6 @@ module Bot
 
       return [] unless has_selector?('.menu-list-element.clickable.with-icon-right button.button')
 
-      if has_selector?('.widget--upgrades-in-progress--list')
-        upgrade_section = first('.widget--upgrades-in-progress--list')
-      end
-
       available_buildings = all('.menu-list-element.menu-list-element-basic.clickable.with-icon-left.with-icon-right:not(.disabled)') 
       
       available_buildings.each do |building|
@@ -470,8 +503,10 @@ module Bot
         next unless building.has_selector?('button')
 
         build_button = building.first('button')
+        next if build_button == nil
 
         if is_building_list
+          logger.debug '   * is_building_list'
           # Skip building when in build list to finish or speedup
           is_building_list = build_button.has_selector?('.icon-build-finish') || build_button.has_selector?('.icon-build-speedup')
           next if is_building_list
